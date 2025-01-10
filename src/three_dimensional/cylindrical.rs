@@ -1,6 +1,6 @@
 use std::{
     fmt::Display,
-    ops::{Add, Neg, Sub},
+    ops::{Add, Div, Mul, Neg, Sub},
 };
 
 use super::vector3::Vector3;
@@ -18,7 +18,7 @@ use serde::{Deserialize, Serialize};
  *********************/
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Hash)]
 /// A point in 3D space
 pub struct Cylindrical<T: num_traits::Float> {
     /// Angle from the positive `x` direction
@@ -198,7 +198,19 @@ impl<T: Float + TrigConsts> Sub for Cylindrical<T> {
     }
 }
 
-impl<T: Float> std::ops::Div<T> for Cylindrical<T> {
+impl<T: Float> Mul<T> for Cylindrical<T> {
+    type Output = Self;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Self {
+            radius: self.radius * rhs,
+            height: self.height * rhs,
+            azimuth: self.azimuth,
+        }
+    }
+}
+
+impl<T: Float> Div<T> for Cylindrical<T> {
     type Output = Self;
 
     fn div(self, rhs: T) -> Self::Output {

@@ -1,4 +1,4 @@
-use num_traits::Float;
+use num_traits::{Float, Num};
 
 pub trait Positional<T: Float>
 where
@@ -61,7 +61,7 @@ where
     }
 }
 
-pub trait Dot<T: Float> {
+pub trait Dot<T: Num> {
     fn dot(&self, rhs: &Self) -> T;
 }
 
