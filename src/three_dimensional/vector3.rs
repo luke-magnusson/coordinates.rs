@@ -1,9 +1,9 @@
 use std::{
     fmt::Display,
-    ops::{Add, Neg, Sub},
+    ops::{Add, Mul, Neg, Sub},
 };
 
-use num_traits::Float;
+use num_traits::{CheckedAdd, CheckedSub, Float, Num};
 
 use crate::traits::{Dot, Magnitude, Positional};
 
@@ -17,9 +17,9 @@ use serde::{Deserialize, Serialize};
  ***************/
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Hash)]
 /// A point in 3d space
-pub struct Vector3<T: num_traits::Float> {
+pub struct Vector3<T: Num> {
     /// Left (-)/right (+) axis
     pub x: T,
     /// In (+)/out (-) axis
@@ -97,13 +97,13 @@ impl<T: Float> crate::traits::Magnitude<T> for Vector3<T> {
     }
 }
 
-impl<T: Float> crate::traits::Dot<T> for Vector3<T> {
+impl<T: Num + Copy> crate::traits::Dot<T> for Vector3<T> {
     fn dot(&self, other: &Self) -> T {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 }
 
-impl<T: Float> crate::traits::Cross3D for Vector3<T> {
+impl<T: Num + Copy> crate::traits::Cross3D for Vector3<T> {
     fn cross(&self, other: &Self) -> Self {
         Self {
             x: self.y * other.z - self.z * other.y,
@@ -123,7 +123,7 @@ impl<T: Float> Positional<T> for Vector3<T> {
  * ARITHMETIC TRAIT DEFINITIONS *
  ********************************/
 
-impl<T: Float> Neg for Vector3<T> {
+impl<T: Num + Neg<Output = T> + Copy> Neg for Vector3<T> {
     type Output = Vector3<T>;
 
     fn neg(self) -> Self::Output {
@@ -135,7 +135,7 @@ impl<T: Float> Neg for Vector3<T> {
     }
 }
 
-impl<T: Float> Add for Vector3<T> {
+impl<T: Num> Add for Vector3<T> {
     type Output = Vector3<T>;
 
     fn add(self, rhs: Self) -> Self::Output {
@@ -147,7 +147,7 @@ impl<T: Float> Add for Vector3<T> {
     }
 }
 
-impl<T: Float> Sub for Vector3<T> {
+impl<T: Num> Sub for Vector3<T> {
     type Output = Vector3<T>;
 
     fn sub(self, rhs: Self) -> Self::Output {
@@ -159,7 +159,7 @@ impl<T: Float> Sub for Vector3<T> {
     }
 }
 
-impl<T: Float> std::ops::Div<T> for Vector3<T> {
+impl<T: Num + Copy> std::ops::Div<T> for Vector3<T> {
     type Output = Self;
 
     fn div(self, rhs: T) -> Self::Output {
@@ -171,11 +171,47 @@ impl<T: Float> std::ops::Div<T> for Vector3<T> {
     }
 }
 
+impl<T: Float + Mul + Copy> Mul<T> for Vector3<T> {
+    type Output = Vector3<T>;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Vector3 {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
+        }
+    }
+}
+
+/*********************
+ * CHECKED ARITHMETIC TRAITS *
+ *********************/
+
+impl<T: Float + CheckedAdd> CheckedAdd for Vector3<T> {
+    fn checked_add(&self, rhs: &Self) -> Option<Self> {
+        Some(Vector3 {
+            x: self.x.checked_add(&rhs.x)?,
+            y: self.y.checked_add(&rhs.y)?,
+            z: self.z.checked_add(&rhs.z)?,
+        })
+    }
+}
+
+impl<T: Float + CheckedSub> CheckedSub for Vector3<T> {
+    fn checked_sub(&self, rhs: &Self) -> Option<Self> {
+        Some(Vector3 {
+            x: self.x.checked_sub(&rhs.x)?,
+            y: self.y.checked_sub(&rhs.y)?,
+            z: self.z.checked_sub(&rhs.z)?,
+        })
+    }
+}
+
 /********************
  * FROM DEFINITIONS *
  ********************/
 
-impl<T: Float> From<(T, T, T)> for Vector3<T> {
+impl<T: Num> From<(T, T, T)> for Vector3<T> {
     fn from(tuple: (T, T, T)) -> Self {
         Vector3 {
             x: tuple.0,
@@ -185,19 +221,19 @@ impl<T: Float> From<(T, T, T)> for Vector3<T> {
     }
 }
 
-impl<T: Float> Into<(T, T, T)> for Vector3<T> {
+impl<T: Num> Into<(T, T, T)> for Vector3<T> {
     fn into(self) -> (T, T, T) {
         (self.x, self.y, self.z)
     }
 }
 
-impl<T: Float> Into<[T; 3]> for Vector3<T> {
+impl<T: Num> Into<[T; 3]> for Vector3<T> {
     fn into(self) -> [T; 3] {
         [self.x, self.y, self.z]
     }
 }
 
-impl<T: Float> From<[T; 3]> for Vector3<T> {
+impl<T: Num + Copy> From<[T; 3]> for Vector3<T> {
     fn from(a: [T; 3]) -> Self {
         Self {
             x: a[0],
@@ -258,7 +294,7 @@ impl<T: Float> From<&Spherical<T>> for Vector3<T> {
  * DISPLAY IMPLEMENTATION *
  **************************/
 
-impl<T: Float + Display> Display for Vector3<T> {
+impl<T: Num + Display> Display for Vector3<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "({}, {}, {})", self.x, self.y, self.z)
     }
@@ -292,7 +328,7 @@ mod tests {
                 up.angle_to(&point),
                 up.dot(&point)
             );
-            
+
             assert_float_relative_eq!(f32::FRAC_PI_2, up.angle_to(&point), EPSILON);
         }
 

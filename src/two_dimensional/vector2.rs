@@ -1,9 +1,9 @@
 use std::{
     fmt::Display,
-    ops::{Add, Neg, Sub},
+    ops::{Add, Mul, Neg, Sub},
 };
 
-use num_traits::{Float, Num};
+use num_traits::{CheckedAdd, CheckedSub, Float, Num};
 
 use crate::traits::TrigConsts;
 
@@ -16,11 +16,11 @@ use serde::{Deserialize, Serialize};
  ***************/
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Hash)]
 /// Point in cartesian space on a 2D plane
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```rust
 /// # use coordinates::two_dimensional::{TwoDimensionalConsts, Vector2};
 /// let origin = Vector2 {
@@ -128,6 +128,17 @@ impl<T: Num + Sub> Sub for Vector2<T> {
     }
 }
 
+impl<T: Num + Mul + Copy> Mul<T> for Vector2<T> {
+    type Output = Vector2<T>;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Vector2 {
+            x: self.x * rhs,
+            y: self.y * rhs,
+        }
+    }
+}
+
 impl<T: Float> std::ops::Div<T> for Vector2<T> {
     type Output = Self;
 
@@ -136,6 +147,28 @@ impl<T: Float> std::ops::Div<T> for Vector2<T> {
             x: self.x / rhs,
             y: self.y / rhs,
         }
+    }
+}
+
+/*********************
+ * CHECKED ARITHMETIC TRAITS *
+ *********************/
+
+impl<T: Num + CheckedAdd> CheckedAdd for Vector2<T> {
+    fn checked_add(&self, rhs: &Self) -> Option<Self> {
+        Some(Vector2 {
+            x: self.x.checked_add(&rhs.x)?,
+            y: self.y.checked_add(&rhs.y)?,
+        })
+    }
+}
+
+impl<T: Num + CheckedSub> CheckedSub for Vector2<T> {
+    fn checked_sub(&self, rhs: &Self) -> Option<Self> {
+        Some(Vector2 {
+            x: self.x.checked_sub(&rhs.x)?,
+            y: self.y.checked_sub(&rhs.y)?,
+        })
     }
 }
 
@@ -158,8 +191,8 @@ impl<T: Num> From<Vector2<T>> for (T, T) {
     }
 }
 
-impl<T: Num + Clone> From<[T;2]> for Vector2<T> {
-    fn from(a: [T;2]) -> Self {
+impl<T: Num + Clone> From<[T; 2]> for Vector2<T> {
+    fn from(a: [T; 2]) -> Self {
         Vector2 {
             x: a[0].clone(),
             y: a[1].clone(),
@@ -167,7 +200,7 @@ impl<T: Num + Clone> From<[T;2]> for Vector2<T> {
     }
 }
 
-impl<T: Num> From<Vector2<T>> for [T;2] {
+impl<T: Num> From<Vector2<T>> for [T; 2] {
     fn from(v: Vector2<T>) -> Self {
         [v.x, v.y]
     }

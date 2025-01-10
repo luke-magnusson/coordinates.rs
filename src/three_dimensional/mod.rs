@@ -1,32 +1,26 @@
 use std::ops::{Add, Neg, Sub};
 
-use num_traits::Float;
 use crate::traits::Positional;
+use num_traits::Float;
 
-mod vector3;
 mod cylindrical;
 mod spherical;
+mod vector3;
 
-pub use vector3::*;
 pub use cylindrical::*;
 pub use spherical::*;
+pub use vector3::*;
 
 /// Auto-trait for structs that implement consts and operators.
 pub trait FullThreeDimensional<U> {}
 
 impl<T, U: Float> FullThreeDimensional<U> for T where
-    T: Positional<U>
-        + ThreeDimensionalConsts<U>
-        + Add
-        + Sub
-        + Neg
-        + Sized
+    T: Positional<U> + ThreeDimensionalConsts<U> + Add + Sub + Neg + Sized
 {
 }
 
 /// Trait holding constants for unit vectors and the origin
 pub trait ThreeDimensionalConsts<T: Float> {
-
     /// Center of the coordinate space
     const ORIGIN: Self;
     /// Unit vector pointing in the positive z direction
