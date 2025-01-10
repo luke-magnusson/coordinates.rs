@@ -31,8 +31,9 @@ where
     ///
     /// assert!((right.angle_to(&up) - std::f64::consts::FRAC_PI_2).abs() < std::f64::EPSILON);
     /// ```
+    #[must_use]
     fn angle_to(&self, other: &Self) -> T {
-        (self.dot(&other) / (self.magnitude() * other.magnitude())).acos()
+        (self.dot(other) / (self.magnitude() * other.magnitude())).acos()
     }
 }
 
@@ -44,6 +45,7 @@ where
     ///
     /// This is the same as getting the euclidean distance from the origin to the
     /// tip of the vector, i.e. `sqrt(x^2 + y^2 + z^2)` for a cartesian coordinate
+    #[must_use]
     fn magnitude(&self) -> T;
 
     /// Returns the magnitude of a vector in as few operations as possible
@@ -54,18 +56,22 @@ where
     ///  e.g. the spherical coordinates `(10,0,0)` will have a smaller
     ///  `quick_magnitude()` than the cartesian coordinate `(0,5,0)` despite
     ///  having a larger real magnitude
+    #[must_use]
     fn quick_magnitude(&self) -> T;
 
+    #[must_use]
     fn normalize(self) -> Self {
         self / self.magnitude()
     }
 }
 
 pub trait Dot<T: Num> {
+    #[must_use]
     fn dot(&self, rhs: &Self) -> T;
 }
 
 pub trait Cross3D {
+    #[must_use]
     fn cross(&self, rhs: &Self) -> Self;
 }
 
