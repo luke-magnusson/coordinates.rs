@@ -108,7 +108,7 @@ impl<T: Float> crate::traits::Cross3D for Vector3<T> {
         Self {
             x: self.y * other.z - self.z * other.y,
             y: self.z * other.x - self.x * other.z,
-            z: self.x * other.y - self.y - other.x,
+            z: self.x * other.y - self.y * other.x,
         }
     }
 }
@@ -292,7 +292,7 @@ mod tests {
                 up.angle_to(&point),
                 up.dot(&point)
             );
-            
+
             assert_float_relative_eq!(f32::FRAC_PI_2, up.angle_to(&point), EPSILON);
         }
 
