@@ -2,7 +2,7 @@ use num_traits::Float;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 use crate::{
-    traits::{CrossMagnitude, Dot, Magnitude, Positional, TrigConsts},
+    traits::{Dot, Magnitude, Positional, TrigConsts},
     two_dimensional::vector2::Vector2,
 };
 
@@ -19,7 +19,7 @@ use serde::{Deserialize, Serialize};
 /// unit vector `[1, 0]` in the clockwise direction. (in radians)
 ///
 /// > i.e. the angle `∠POX` where `P` is the coordinate, `O` is the origin `[0, 0]`
-/// and `X` is a point on the positive region of the x axis, e.g. `[1, 0]`
+/// > and `X` is a point on the positive region of the x axis, e.g. `[1, 0]`
 pub struct Polar<T: Float> {
     /// Distance from the origin.
     #[cfg_attr(feature = "serde", serde(rename = "r"))]
@@ -62,12 +62,6 @@ impl<T: Float> Magnitude<T> for Polar<T> {
 
     fn quick_magnitude(&self) -> T {
         self.radius
-    }
-}
-
-impl<T: Float> CrossMagnitude<T> for Polar<T> {
-    fn cross_magnitude(&self, rhs: &Self) -> T {
-        self.magnitude() * rhs.magnitude() * (self.theta - rhs.theta).sin().abs()
     }
 }
 

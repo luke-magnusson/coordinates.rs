@@ -108,14 +108,14 @@ impl<T: Num + Copy> crate::traits::Cross3D for Vector3<T> {
         Self {
             x: self.y * other.z - self.z * other.y,
             y: self.z * other.x - self.x * other.z,
-            z: self.x * other.y - self.y - other.x,
+            z: self.x * other.y - self.y * other.x,
         }
     }
 }
 
 impl<T: Float> Positional<T> for Vector3<T> {
     fn angle_to(&self, other: &Self) -> T {
-        (self.dot(&other) / (self.magnitude() * other.magnitude())).acos()
+        (self.dot(other) / (self.magnitude() * other.magnitude())).acos()
     }
 }
 
@@ -221,15 +221,15 @@ impl<T: Num> From<(T, T, T)> for Vector3<T> {
     }
 }
 
-impl<T: Num> Into<(T, T, T)> for Vector3<T> {
-    fn into(self) -> (T, T, T) {
-        (self.x, self.y, self.z)
+impl<T: Num> From<Vector3<T>> for (T, T, T) {
+    fn from(val: Vector3<T>) -> Self {
+        (val.x, val.y, val.z)
     }
 }
 
-impl<T: Num> Into<[T; 3]> for Vector3<T> {
-    fn into(self) -> [T; 3] {
-        [self.x, self.y, self.z]
+impl<T: Num> From<Vector3<T>> for [T; 3] {
+    fn from(val: Vector3<T>) -> Self {
+        [val.x, val.y, val.z]
     }
 }
 
@@ -310,7 +310,6 @@ mod tests {
     use super::Vector3;
 
     use assert_float_eq::*;
-    use std::f32::EPSILON;
     #[test]
     pub fn is_positional() {
         let up = Vector3::<f32>::UP;
@@ -329,9 +328,9 @@ mod tests {
                 up.dot(&point)
             );
 
-            assert_float_relative_eq!(f32::FRAC_PI_2, up.angle_to(&point), EPSILON);
+            assert_float_relative_eq!(f32::FRAC_PI_2, up.angle_to(&point), f32::EPSILON);
         }
 
-        assert_float_relative_eq!(f32::PI, up.angle_to(&Vector3::<f32>::DOWN), EPSILON);
+        assert_float_relative_eq!(f32::PI, up.angle_to(&Vector3::<f32>::DOWN), f32::EPSILON);
     }
 }
