@@ -310,7 +310,6 @@ mod tests {
     use super::Vector3;
 
     use assert_float_eq::*;
-    use std::f32::EPSILON;
     #[test]
     pub fn is_positional() {
         let up = Vector3::<f32>::UP;
@@ -329,9 +328,9 @@ mod tests {
                 up.dot(&point)
             );
 
-            assert_float_relative_eq!(f32::FRAC_PI_2, up.angle_to(&point), EPSILON);
+            assert_float_relative_eq!(f32::FRAC_PI_2, up.angle_to(&point), f32::EPSILON);
         }
 
-        assert_float_relative_eq!(f32::PI, up.angle_to(&Vector3::<f32>::DOWN), EPSILON);
+        assert_float_relative_eq!(f32::PI, up.angle_to(&Vector3::<f32>::DOWN), f32::EPSILON);
     }
 }
