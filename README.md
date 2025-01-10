@@ -5,21 +5,24 @@
 Add the following to your `cargo.toml` under `[dependencies]`
 
 ```toml
-coordinates = "0.3.1"
+coordinates = "0.4.0"
 ```
 
-if you want additional features — like serializing and deserializing — your `[dependencies]` line will look more like this
+If you want additional features — like serializing and deserializing —
+your `[dependencies]` line will look more like this
+
 ```toml
-coordinates = { version = "0.3.1", features = ["serde"] }
+coordinates = { version = "0.4.0", features = ["serde"] }
 ```
 
-In a file import the coordinate system you want, or all of them through 
+In a file import the coordinate system you want, or all of them through
 `coordinates::prelude::*`
 
 ```rust
 use coordinates::two_dimensional::Vector2;
 ```
-If you want extra traits, such as magnitude or dot products you will also need 
+
+If you want extra traits, such as magnitude or dot products you will also need
 to include the following
 
 ```rust
@@ -34,3 +37,8 @@ let var = Vector2 {
   y: 1.0,
 }
 ```
+
+## Acknowledgements
+
+- [rsekman](https://github.com/rsekman), for contributing multiple PRs to the repo,
+  and helping me refactor and track down a bug for version 0.4.0
