@@ -5,7 +5,7 @@ use std::{
 
 use num_traits::{CheckedAdd, CheckedSub, Float, Num};
 
-use crate::traits::TrigConsts;
+use crate::traits::{Dot, Magnitude, TrigConsts};
 
 use super::polar::Polar;
 
@@ -76,12 +76,6 @@ impl<T: Float> crate::traits::Magnitude<T> for Vector2<T> {
 
     fn quick_magnitude(&self) -> T {
         self.x * self.x + self.y * self.y
-    }
-}
-
-impl<T: Float> crate::traits::CrossMagnitude<T> for Vector2<T> {
-    fn cross_magnitude(&self, rhs: &Self) -> T {
-        self.x * rhs.y - rhs.x * self.y
     }
 }
 

@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
  * STRUCT DEFINITION *
  *********************/
 
- #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Hash)]
 /// A point in 3D space
 pub struct Cylindrical<T: num_traits::Float> {

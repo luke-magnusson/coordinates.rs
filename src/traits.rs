@@ -2,7 +2,7 @@ use num_traits::{Float, Num};
 
 pub trait Positional<T: Float>
 where
-    Self: Magnitude<T> + Dot<T> + CrossMagnitude<T> + Copy,
+    Self: Magnitude<T> + Dot<T> + Copy,
 {
     /// Angle between two points in space.
     ///
@@ -67,18 +67,6 @@ pub trait Dot<T: Num> {
 
 pub trait Cross3D {
     fn cross(&self, rhs: &Self) -> Self;
-}
-pub trait CrossMagnitude<T: Float> {
-    fn cross_magnitude(&self, rhs: &Self) -> T;
-}
-
-impl<T, U: Float> CrossMagnitude<U> for T
-where
-    T: Magnitude<U> + Cross3D,
-{
-    fn cross_magnitude(&self, rhs: &Self) -> U {
-        self.cross(rhs).magnitude()
-    }
 }
 
 pub trait TrigConsts

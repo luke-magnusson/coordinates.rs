@@ -2,7 +2,7 @@ use num_traits::Float;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 use crate::{
-    traits::{CrossMagnitude, Dot, Magnitude, Positional, TrigConsts},
+    traits::{Dot, Magnitude, Positional, TrigConsts},
     two_dimensional::vector2::Vector2,
 };
 
@@ -62,12 +62,6 @@ impl<T: Float> Magnitude<T> for Polar<T> {
 
     fn quick_magnitude(&self) -> T {
         self.radius
-    }
-}
-
-impl<T: Float> CrossMagnitude<T> for Polar<T> {
-    fn cross_magnitude(&self, rhs: &Self) -> T {
-        self.magnitude() * rhs.magnitude() * (self.theta - rhs.theta).sin().abs()
     }
 }
 
