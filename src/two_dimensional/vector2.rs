@@ -18,9 +18,9 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Hash)]
 /// Point in cartesian space on a 2D plane
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```rust
 /// # use coordinates::two_dimensional::{TwoDimensionalConsts, Vector2};
 /// let origin = Vector2 {
@@ -191,8 +191,8 @@ impl<T: Num> From<Vector2<T>> for (T, T) {
     }
 }
 
-impl<T: Num + Clone> From<[T;2]> for Vector2<T> {
-    fn from(a: [T;2]) -> Self {
+impl<T: Num + Clone> From<[T; 2]> for Vector2<T> {
+    fn from(a: [T; 2]) -> Self {
         Vector2 {
             x: a[0].clone(),
             y: a[1].clone(),
@@ -200,7 +200,7 @@ impl<T: Num + Clone> From<[T;2]> for Vector2<T> {
     }
 }
 
-impl<T: Num> From<Vector2<T>> for [T;2] {
+impl<T: Num> From<Vector2<T>> for [T; 2] {
     fn from(v: Vector2<T>) -> Self {
         [v.x, v.y]
     }
