@@ -1,24 +1,24 @@
 use num_traits::Float;
 
 use crate::{
-    traits::{CrossMagnitude, Dot, Magnitude, Positional, TrigConsts},
+    traits::{Dot, Magnitude, Positional, TrigConsts},
     two_dimensional::vector2::Vector2,
 };
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-#[derive(Debug, Copy,  Clone, PartialEq, Eq, PartialOrd)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd)]
 
 /// Coordinate in the format (r, theta)
-/// 
+///
 /// Radius is the distance from the origin.
-/// 
-/// Theta is the angle between the vector pointing to this coordinate and the 
+///
+/// Theta is the angle between the vector pointing to this coordinate and the
 /// unit vector `[1, 0]` in the clockwise direction. (in radians)
-/// 
+///
 /// > i.e. the angle `∠POX` where `P` is the coordinate, `O` is the origin `[0, 0]`
-/// and `X` is a point on the positive region of the x axis, e.g. `[1, 0]` 
+/// and `X` is a point on the positive region of the x axis, e.g. `[1, 0]`
 pub struct Polar<T: Float> {
     /// Distance from the origin.
     #[cfg_attr(feature = "serde", serde(rename = "r"))]
@@ -61,12 +61,6 @@ impl<T: Float> Magnitude<T> for Polar<T> {
 
     fn quick_magnitude(&self) -> T {
         self.radius
-    }
-}
-
-impl<T: Float> CrossMagnitude<T> for Polar<T> {
-    fn cross_magnitude(&self, rhs: &Self) -> T {
-        self.magnitude() * rhs.magnitude() * (self.theta - rhs.theta).sin().abs()
     }
 }
 
@@ -125,5 +119,3 @@ impl<T: Float> From<Polar<T>> for (T, T) {
         (polar.radius, polar.theta)
     }
 }
-
-

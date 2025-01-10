@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub, Neg};
+use std::ops::{Add, Neg, Sub};
 
 use num_traits::Float;
 
@@ -14,15 +14,9 @@ pub use vector2::*;
 pub trait FullTwoDimensional<U> {}
 
 impl<T, U: Float> FullTwoDimensional<U> for T where
-    T: Positional<U>
-        + TwoDimensionalConsts<U>
-        + Add
-        + Sub
-        + Neg
-        + Sized
+    T: Positional<U> + TwoDimensionalConsts<U> + Add + Sub + Neg + Sized
 {
 }
-
 
 /// Trait holding constants for unit vectors and the origin
 pub trait TwoDimensionalConsts<T: Float> {

@@ -18,10 +18,10 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Copy, Clone)]
 /// A point in 3D space using spherical coordinates as defined by [ISO 80000-2:2019](https://en.wikipedia.org/wiki/Spherical_coordinate_system#Definition).
-/// 
+///
 /// This means that the coordinates are provided in the order `radius` (`r`), `polar angle` (`theta`), and finally `azimuthal angle` (`phi`)
 /// ## Examples
-/// 
+///
 /// ```
 /// # use coordinates::three_dimensional::Spherical;
 /// # use crate::coordinates::three_dimensional::ThreeDimensionalConsts;
@@ -48,19 +48,19 @@ impl<T: Float + TrigConsts> Spherical<T> {
     /// - `azimuthal angle` ∈ [0,τ)
     ///     - Doesn't have side effects
     /// - `Polar angle ∈ [0,π]`
-    ///     - Mutates azimuthal angle 
+    ///     - Mutates azimuthal angle
     /// - `radius ∈ [0,∞)`
     ///     - Mutates polar angle and azimuthal angle
-    /// 
+    ///
     /// # Examples
     /// ## Clamping Azimuthal angle
-    /// 
+    ///
     /// ```
     /// # use coordinates::three_dimensional::Spherical;
     /// # use coordinates::traits::Positional;
-    /// let right = Spherical::<f64>::new(1.0, std::f64::consts::FRAC_PI_2, 0.0); 
+    /// let right = Spherical::<f64>::new(1.0, std::f64::consts::FRAC_PI_2, 0.0);
     /// let also_right = Spherical::<f64>::new(1.0, std::f64::consts::FRAC_PI_2, std::f64::consts::TAU);
-    /// 
+    ///
     /// assert!(right.angle_to(&also_right) < std::f64::EPSILON);
     /// ```
     /// ## Clamping Polar Angle
@@ -75,9 +75,9 @@ impl<T: Float + TrigConsts> Spherical<T> {
     /// ```
     /// # use coordinates::three_dimensional::Spherical;
     /// # use coordinates::traits::Positional;
-    /// let left = Spherical::<f64>::new(1.0, std::f64::consts::FRAC_PI_2, std::f64::consts::PI); 
+    /// let left = Spherical::<f64>::new(1.0, std::f64::consts::FRAC_PI_2, std::f64::consts::PI);
     /// let also_left = Spherical::<f64>::new(-1.0, std::f64::consts::FRAC_PI_2, 0.0);
-    /// 
+    ///
     /// assert!(left.angle_to(&also_left) < std::f64::EPSILON);
     /// ```
     //ALTERNATE NEW METHOD
@@ -96,7 +96,7 @@ impl<T: Float + TrigConsts> Spherical<T> {
 
     /// Returns the latitude/elevation of the point.
     ///
-    /// i.e. the polar angle with respect to the equator instead of the 
+    /// i.e. the polar angle with respect to the equator instead of the
     /// north pole
     pub fn get_elevation(&self) -> T {
         T::FRAC_PI_2 - self.polar_angle
@@ -135,7 +135,7 @@ impl<T: Float + TrigConsts> Spherical<T> {
     }
 
     /// Ensures radius is always in the range [0,+infinity]
-    pub fn set_radius(&mut self, radius : T) {
+    pub fn set_radius(&mut self, radius: T) {
         if radius.is_sign_negative() {
             self.set_azimuthal_angle(self.azimuthal_angle - T::PI);
             self.set_polar_angle(T::PI - self.polar_angle);
@@ -279,7 +279,7 @@ impl<T: Float + TrigConsts> PartialOrd for Spherical<T> {
             Some(core::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
-        
+
         self.polar_angle.partial_cmp(&other.polar_angle)
     }
 }
@@ -522,7 +522,6 @@ mod tests {
             // );
             let deviation = entry.angle_to(&expected[i]);
 
-
             print!("Winding of {:5.2}τ rad ", (total_i as f32) / 4.0);
             // assert_float_relative_eq!(deviation, 0.0, f32::EPSILON);
             // Maximum acceptable inaccuracy is 0.25" (seconds of an arc)
@@ -532,10 +531,7 @@ mod tests {
             }
             assert_float_relative_eq!(deviation, 0.0, ARC_SECOND / 4.0);
 
-            println!(
-               "worked (deviations: {})",
-                deviation
-            );
+            println!("worked (deviations: {})", deviation);
             total_i += 1;
         }
         println!("\x1b[32mSubtest Passed\x1b[0m");

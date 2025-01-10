@@ -4,7 +4,10 @@ use std::{
 };
 
 use super::vector3::Vector3;
-use crate::{traits::{Positional, TrigConsts}, prelude::Magnitude};
+use crate::{
+    prelude::Magnitude,
+    traits::{Positional, TrigConsts},
+};
 use num_traits::Float;
 
 #[cfg(feature = "serde")]
@@ -14,7 +17,7 @@ use serde::{Deserialize, Serialize};
  * STRUCT DEFINITION *
  *********************/
 
- #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd)]
 /// A point in 3D space
 pub struct Cylindrical<T: num_traits::Float> {
@@ -31,7 +34,7 @@ pub struct Cylindrical<T: num_traits::Float> {
 
 impl<T: num_traits::Float + TrigConsts> Cylindrical<T> {
     /// Constrains the values to their domains
-    /// 
+    ///
     /// # Examples
     /// ## Maps azimuth between [0,tau)
     /// ```
@@ -39,25 +42,26 @@ impl<T: num_traits::Float + TrigConsts> Cylindrical<T> {
     /// # use coordinates::traits::Positional;
     /// let right = Cylindrical::<f64>::new(1.0, 0.0, 0.0);
     /// let also_right = Cylindrical::<f64>::new(1.0, 0.0, std::f64::consts::TAU);
-    /// 
+    ///
     /// assert!(right.angle_to(&also_right) < std::f64::EPSILON);
     /// ```
-    /// 
+    ///
     /// ## Maps radius to [0, +infinity]
     /// ```
     /// # use coordinates::three_dimensional::Cylindrical;
     /// # use coordinates::traits::Positional;
     /// let right = Cylindrical::<f64>::new(1.0, 10.0, 0.0);
     /// let also_right = Cylindrical::<f64>::new(-1.0, -10.0, std::f64::consts::PI);
-    /// 
+    ///
     /// assert!(right.angle_to(&also_right) < std::f64::EPSILON);
     /// ```
     pub fn new(radius: T, height: T, azimuth: T) -> Self {
-        let true_azimuth = (azimuth - if radius.is_sign_negative() {
-            T::PI
-        } else {
-            T::ZERO
-        } % T::TAU)
+        let true_azimuth = (azimuth
+            - if radius.is_sign_negative() {
+                T::PI
+            } else {
+                T::ZERO
+            } % T::TAU)
             .abs();
 
         let true_height = radius.signum() * height;
@@ -339,10 +343,6 @@ mod tests {
             assert_float_relative_eq!(f32::FRAC_PI_2, up.angle_to(&point), EPSILON);
         }
 
-        assert_float_relative_eq!(
-            f32::PI,
-            up.angle_to(&Cylindrical::<f32>::DOWN),
-            EPSILON
-        );
+        assert_float_relative_eq!(f32::PI, up.angle_to(&Cylindrical::<f32>::DOWN), EPSILON);
     }
 }
