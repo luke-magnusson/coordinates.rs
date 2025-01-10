@@ -2,42 +2,44 @@ use num_traits::Float;
 
 pub trait Positional<T: Float>
 where
-    Self: Magnitude<T> + Dot<T> + CrossMagnitude<T> + Copy
+    Self: Magnitude<T> + Dot<T> + Copy,
 {
     /// Angle between two points in space.
-    /// 
+    ///
     /// # Returns
-    /// 
-    /// The result is a positive value (in radians) aside from if 
+    ///
+    /// The result is a positive value (in radians) aside from if
     /// `self.magnitude() == 0` or `other.magnitude() == 0` where it will return
     /// NaN (acos(infinity) is undefined)
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ## In 2D
     /// ```
     /// # use coordinates::prelude::*;
     /// let right =  Vector2::<f64>::RIGHT;
     /// let up = Vector2::<f64>::UP;
-    /// 
+    ///
     /// assert!((right.angle_to(&up) - std::f64::consts::FRAC_PI_2).abs() < std::f64::EPSILON);
     /// ```
-    /// 
+    ///
     /// ## In 3D
     /// ```
     /// # use coordinates::prelude::*;
     /// let right= Vector3::<f64>::RIGHT;
     /// let up = Vector3::<f64>::UP;
-    /// 
+    ///
     /// assert!((right.angle_to(&up) - std::f64::consts::FRAC_PI_2).abs() < std::f64::EPSILON);
     /// ```
     fn angle_to(&self, other: &Self) -> T {
-        (self.dot(&other)/(self.magnitude()*other.magnitude())).acos()
+        (self.dot(&other) / (self.magnitude() * other.magnitude())).acos()
     }
 }
 
-pub trait Magnitude<T: Float> 
-where Self : Sized + std::ops::Div<T, Output = Self> + Copy,   {
+pub trait Magnitude<T: Float>
+where
+    Self: Sized + std::ops::Div<T, Output = Self> + Copy,
+{
     /// Returns the exact magnitude of the vector
     ///
     /// This is the same as getting the euclidean distance from the origin to the
@@ -65,18 +67,6 @@ pub trait Dot<T: Float> {
 
 pub trait Cross3D {
     fn cross(&self, rhs: &Self) -> Self;
-}
-pub trait CrossMagnitude<T: Float> {
-    fn cross_magnitude(&self, rhs: &Self) -> T;
-}
-
-impl<T, U: Float> CrossMagnitude<U> for T
-where
-    T: Magnitude<U> + Cross3D,
-{
-    fn cross_magnitude(&self, rhs: &Self) -> U {
-        self.cross(rhs).magnitude()
-    }
 }
 
 pub trait TrigConsts
