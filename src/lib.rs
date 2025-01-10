@@ -1,3 +1,4 @@
+#[allow(unused_imports, unused_attributes)] // Used for an optional feature
 #[cfg(feature = "serde")]
 #[macro_use]
 use serde::{Deserialize, Serialize};

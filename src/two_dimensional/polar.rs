@@ -19,7 +19,7 @@ use serde::{Deserialize, Serialize};
 /// unit vector `[1, 0]` in the clockwise direction. (in radians)
 ///
 /// > i.e. the angle `∠POX` where `P` is the coordinate, `O` is the origin `[0, 0]`
-/// and `X` is a point on the positive region of the x axis, e.g. `[1, 0]`
+/// > and `X` is a point on the positive region of the x axis, e.g. `[1, 0]`
 pub struct Polar<T: Float> {
     /// Distance from the origin.
     #[cfg_attr(feature = "serde", serde(rename = "r"))]

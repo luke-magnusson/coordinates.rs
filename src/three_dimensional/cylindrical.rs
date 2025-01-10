@@ -248,9 +248,9 @@ impl<T: Float> From<(T, T, T)> for Cylindrical<T> {
     }
 }
 
-impl<T: Float> Into<(T, T, T)> for Cylindrical<T> {
-    fn into(self) -> (T, T, T) {
-        (self.radius, self.azimuth, self.height)
+impl<T: Float> From<Cylindrical<T>> for (T, T, T) {
+    fn from(val: Cylindrical<T>) -> Self {
+        (val.radius, val.azimuth, val.height)
     }
 }
 
@@ -266,14 +266,12 @@ impl<T: Float + TrigConsts> From<&Vector3<T>> for Cylindrical<T> {
         let azimuthal_angle = if radius.is_zero() {
             // Avoid NaN azimuthal angle
             T::ZERO
+        } else if cart.x.is_sign_positive() {
+            // 1st or 4rd quadrant
+            (cart.y / radius).asin()
         } else {
-            if cart.x.is_sign_positive() {
-                // 1st or 4rd quadrant
-                (cart.y / radius).asin()
-            } else {
-                // 2nd or 3th quadrant
-                T::PI - (cart.y / radius).asin()
-            }
+            // 2nd or 3th quadrant
+            T::PI - (cart.y / radius).asin()
         };
 
         Cylindrical {
@@ -304,7 +302,6 @@ mod tests {
     use super::Vector3;
 
     use assert_float_eq::*;
-    use std::f32::EPSILON;
 
     #[test]
     pub fn convert_to_cartesian() {
@@ -326,13 +323,25 @@ mod tests {
         ];
 
         for (s, c) in cylindricals.into_iter().zip(cartesians.into_iter()) {
-            println!("{:?}", s);
+            println!("{s:?}");
             let s_star: Vector3<f32> = (&s).into();
-            println!("{:?}", s_star);
+            println!("{s_star:?}");
 
-            assert_float_absolute_eq!(c.x, s_star.x, EPSILON * s.azimuth.abs().log(2.0).max(1.0));
-            assert_float_absolute_eq!(c.y, s_star.y, EPSILON * s.azimuth.abs().log(2.0).max(1.0));
-            assert_float_absolute_eq!(c.z, s_star.z, EPSILON * s.height.abs().log(2.0).max(1.0));
+            assert_float_absolute_eq!(
+                c.x,
+                s_star.x,
+                f32::EPSILON * s.azimuth.abs().log(2.0).max(1.0)
+            );
+            assert_float_absolute_eq!(
+                c.y,
+                s_star.y,
+                f32::EPSILON * s.azimuth.abs().log(2.0).max(1.0)
+            );
+            assert_float_absolute_eq!(
+                c.z,
+                s_star.z,
+                f32::EPSILON * s.height.abs().log(2.0).max(1.0)
+            );
         }
     }
 
@@ -352,9 +361,13 @@ mod tests {
                 &up,
                 up.angle_to(&point)
             );
-            assert_float_relative_eq!(f32::FRAC_PI_2, up.angle_to(&point), EPSILON);
+            assert_float_relative_eq!(f32::FRAC_PI_2, up.angle_to(&point), f32::EPSILON);
         }
 
-        assert_float_relative_eq!(f32::PI, up.angle_to(&Cylindrical::<f32>::DOWN), EPSILON);
+        assert_float_relative_eq!(
+            f32::PI,
+            up.angle_to(&Cylindrical::<f32>::DOWN),
+            f32::EPSILON
+        );
     }
 }

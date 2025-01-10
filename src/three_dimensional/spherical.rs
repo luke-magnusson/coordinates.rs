@@ -16,6 +16,7 @@ use serde::{Deserialize, Serialize};
  *********************/
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+#[allow(clippy::derived_hash_with_manual_eq)]
 #[derive(Debug, Copy, Clone, Hash)]
 /// A point in 3D space using spherical coordinates as defined by [ISO 80000-2:2019](https://en.wikipedia.org/wiki/Spherical_coordinate_system#Definition).
 ///
@@ -365,7 +366,6 @@ mod tests {
     use super::Vector3;
 
     use assert_float_eq::*;
-    use std::f32::EPSILON;
 
     const ARC_SECOND: f32 = 4.848e-6;
 
@@ -389,24 +389,24 @@ mod tests {
         ];
 
         for (s, c) in sphericals.into_iter().zip(cartesians.into_iter()) {
-            println!("{:?}", s);
+            println!("{s:?}");
             let s_star: Vector3<f32> = (&s).into();
-            println!("{:?}", s_star);
+            println!("{s_star:?}");
 
             assert_float_absolute_eq!(
                 c.x,
                 s_star.x,
-                EPSILON * s.azimuthal_angle.abs().log(2.0).max(1.0)
+                f32::EPSILON * s.azimuthal_angle.abs().log(2.0).max(1.0)
             );
             assert_float_absolute_eq!(
                 c.y,
                 s_star.y,
-                EPSILON * s.azimuthal_angle.abs().log(2.0).max(1.0)
+                f32::EPSILON * s.azimuthal_angle.abs().log(2.0).max(1.0)
             );
             assert_float_absolute_eq!(
                 c.z,
                 s_star.z,
-                EPSILON * s.polar_angle.abs().log(2.0).max(1.0)
+                f32::EPSILON * s.polar_angle.abs().log(2.0).max(1.0)
             );
         }
     }
@@ -421,10 +421,10 @@ mod tests {
             Spherical::<f32>::LEFT,
             Spherical::<f32>::RIGHT,
         ] {
-            assert_float_relative_eq!(f32::FRAC_PI_2, up.angle_to(&point), EPSILON);
+            assert_float_relative_eq!(f32::FRAC_PI_2, up.angle_to(&point), f32::EPSILON);
         }
 
-        assert_float_relative_eq!(f32::PI, up.angle_to(&Spherical::<f32>::DOWN), EPSILON);
+        assert_float_relative_eq!(f32::PI, up.angle_to(&Spherical::<f32>::DOWN), f32::EPSILON);
     }
 
     #[test]
@@ -441,6 +441,7 @@ mod tests {
         }
     }
 
+    #[allow(clippy::cast_precision_loss)]
     fn small_distance_loop(root: Spherical<f32>) {
         for delta in (-128..128).map(|x| x as f32 / 128.0) {
             let azi_altered = Spherical::new(1.0, root.polar_angle, root.azimuthal_angle + delta);
@@ -449,15 +450,16 @@ mod tests {
             let delta_azimuth = azi_altered.angle_to(&root);
             let delta_polar = polar_altered.angle_to(&root);
 
-            println!("Delta={}", delta);
-            println!("dist({}, {}) = {}", root, azi_altered, delta_azimuth);
+            println!("Delta={delta}");
+            println!("dist({root}, {azi_altered}) = {delta_azimuth}");
             assert_float_absolute_eq!(delta_azimuth, delta.abs(), ARC_SECOND / 4.0);
-            println!("dist({}, {}) = {}", root, polar_altered, delta_polar);
+            println!("dist({root}, {polar_altered}) = {delta_polar}");
             assert_float_absolute_eq!(delta_polar, delta.abs(), ARC_SECOND / 4.0);
             println!();
         }
     }
 
+    #[allow(clippy::cast_precision_loss)]
     #[test]
     pub fn constructor_tests() {
         type Base = Spherical<f32>;
@@ -513,12 +515,12 @@ mod tests {
         );
     }
 
+    #[allow(clippy::cast_precision_loss)]
     fn test_constructor(
         iterator: &mut dyn Iterator<Item = Spherical<f32>>,
         expected: &[Spherical<f32>],
     ) {
-        let mut total_i = 0;
-        for entry in iterator {
+        for (total_i, entry) in iterator.enumerate() {
             // Set i between 0 and expected.len() - 1
             let i = total_i % expected.len();
 
@@ -543,8 +545,7 @@ mod tests {
             }
             assert_float_relative_eq!(deviation, 0.0, ARC_SECOND / 4.0);
 
-            println!("worked (deviations: {})", deviation);
-            total_i += 1;
+            println!("worked (deviations: {deviation})");
         }
         println!("\x1b[32mSubtest Passed\x1b[0m");
         println!();
